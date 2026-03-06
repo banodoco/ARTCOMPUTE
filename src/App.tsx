@@ -50,7 +50,7 @@ const SHOWCASE: ShowcaseItem[] = [
     avatar: "F",
   },
   {
-    src: "/1022-copy1.mov",
+    src: "/1022-copy1.mp4",
     artist: "Unknown",
     handle: "@unknown",
     socialUrl: "#",
@@ -352,6 +352,8 @@ function VideoShowcase({ children }: { children: (controls: ShowcaseControls) =>
     setFullscreen(false);
   };
 
+  const nextItem = order[(current + 1) % order.length];
+
   return (
     <>
       {/* Background video */}
@@ -369,6 +371,7 @@ function VideoShowcase({ children }: { children: (controls: ShowcaseControls) =>
               ref={bgVideoRef}
               muted
               playsInline
+              preload="auto"
               className="w-full h-full object-cover"
               src={item.src}
             />
@@ -376,6 +379,9 @@ function VideoShowcase({ children }: { children: (controls: ShowcaseControls) =>
         </AnimatePresence>
         <div className="absolute inset-0 bg-[#0a0a0a]/60" />
       </div>
+
+      {/* Preload next video */}
+      <link rel="preload" as="video" href={nextItem.src} />
 
       {children({ item, progress, next, prev, openFullscreen })}
 
