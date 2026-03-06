@@ -13,64 +13,84 @@ interface ShowcaseItem {
   socialType: "twitter" | "instagram";
   avatar: string;
   bgStart?: number; // seconds — where background preview starts (default 0)
+  tool?: string; // e.g. "Deforum", "ComfyUI", "Wan" — shown as "With X"
+  poster?: string; // poster image shown while video loads
 }
 
 const SHOWCASE: ShowcaseItem[] = [
   {
-    src: "/ssstwitter.com_1772746835419.mp4",
-    artist: "NeRF3",
-    handle: "@nerf3_art",
-    socialUrl: "https://twitter.com/nerf3_art",
+    src: "/datavoid.mp4",
+    artist: "Datavoid",
+    handle: "@datavoid",
+    socialUrl: "#",
     socialType: "twitter",
-    avatar: "N",
+    avatar: "/datavoid.jpg",
+    poster: "/datavoid_poster.jpg",
+    tool: "NeRF",
   },
   {
-    src: "/I_Wanna_Know_-_NeRF3_25mb.mp4",
-    artist: "NeRF3",
-    handle: "@nerf3_art",
-    socialUrl: "https://twitter.com/nerf3_art",
+    src: "/visualfrisson.mp4",
+    artist: "Visual Frisson",
+    handle: "@visualfrisson",
+    socialUrl: "#",
     socialType: "twitter",
-    avatar: "N",
+    avatar: "/visualfrisson.jpg",
+    poster: "/visualfrisson_poster.jpg",
+    tool: "AnimateDiff",
   },
   {
-    src: "/BLOOM3-HD_BANODOCU_CLIP_BY_Emma-Catnip.mp4",
+    src: "/emmacatnip.mp4",
     artist: "Emma Catnip",
-    handle: "@emma_catnip",
-    socialUrl: "https://twitter.com/emma_catnip",
-    socialType: "twitter",
-    avatar: "E",
-  },
-  {
-    src: "/1022-copy1.mp4",
-    artist: "Unknown",
-    handle: "@unknown",
+    handle: "@emmacatnip",
     socialUrl: "#",
     socialType: "twitter",
-    avatar: "?",
+    avatar: "/emmacatnip.jpg",
+    poster: "/emmacatnip_poster.jpg",
+    tool: "HotshotXL",
   },
   {
-    src: "/2_adam.mp4",
-    artist: "Unknown",
-    handle: "@unknown",
+    src: "/hannah_submarine.mp4",
+    artist: "Hannah Submarine",
+    handle: "@hannah_submarine",
     socialUrl: "#",
     socialType: "twitter",
-    avatar: "?",
+    avatar: "/hannah_submarine.jpg",
+    poster: "/hannah_submarine_poster.jpg",
+    bgStart: 5,
+    tool: "LTX",
   },
   {
-    src: "/Marc Rebillet Diffused.mp4",
-    artist: "Unknown",
-    handle: "@unknown",
+    src: "/_ArtOnTap.mp4",
+    artist: "ArtOnTap",
+    handle: "@_ArtOnTap",
     socialUrl: "#",
     socialType: "twitter",
-    avatar: "?",
+    avatar: "/_ArtOnTap.jpg",
+    poster: "/_ArtOnTap_poster.jpg",
+    tool: "Deforum",
+    bgStart: 5,
   },
   {
-    src: "/fill.mp4",
-    artist: "Unknown",
-    handle: "@unknown",
+    src: "/flipping_sigmas.mp4",
+    artist: "Flipping Sigmas",
+    handle: "@flipping_sigmas",
     socialUrl: "#",
     socialType: "twitter",
-    avatar: "?",
+    avatar: "/flipping_sigmas.jpg",
+    poster: "/flipping_sigmas_poster.jpg",
+    tool: "WarpFusion",
+    bgStart: 3,
+  },
+  {
+    src: "/machine_delusions.mp4",
+    artist: "Machine Delusions",
+    handle: "@machine_delusions",
+    socialUrl: "#",
+    socialType: "twitter",
+    avatar: "/machine_delusions.jpg",
+    poster: "/machine_delusions_poster.jpg",
+    tool: "AnimateLCM",
+    bgStart: 2,
   },
 ];
 
@@ -116,6 +136,8 @@ export default function App() {
 
   return (
     <div className="h-screen scanlines grain relative overflow-hidden flex flex-col">
+      {/* Preload all profile pictures */}
+      {SHOWCASE.map((s) => s.avatar.startsWith("/") ? <link key={s.avatar} rel="preload" as="image" href={s.avatar} /> : null)}
       <VideoShowcase>
         {(showcaseControls) => (
       <motion.main
@@ -148,19 +170,19 @@ export default function App() {
             </section>
 
             <section className="grid grid-cols-3 gap-px mt-10">
-              <div className="border border-white/8 bg-white/[0.03] p-5">
-                <p className="text-[9px] font-bold tracking-[0.15em] uppercase text-white/50">Compute</p>
-                <p className="text-lg font-bold mt-1.5 text-white/95">10–50 GPU hrs</p>
+              <div className="border border-[#39ff14]/10 bg-[#39ff14]/[0.03] p-5">
+                <p className="text-[9px] font-bold tracking-[0.15em] uppercase text-[#39ff14]/40">Compute</p>
+                <p className="text-lg font-bold mt-1.5 text-white/80">10–50 GPU hrs</p>
                 <p className="text-[10px] text-white/40 mt-1">Choose your machine</p>
               </div>
-              <div className="border border-white/8 bg-white/[0.03] p-5">
-                <p className="text-[9px] font-bold tracking-[0.15em] uppercase text-white/50">How it works</p>
-                <p className="text-lg font-bold mt-1.5 text-white/95">Automated approval</p>
+              <div className="border border-[#a78bfa]/10 bg-[#a78bfa]/[0.03] p-5">
+                <p className="text-[9px] font-bold tracking-[0.15em] uppercase text-[#a78bfa]/50">How it works</p>
+                <p className="text-lg font-bold mt-1.5 text-white/80">Automated approval</p>
                 <p className="text-[10px] text-white/40 mt-1">AI-decision in seconds</p>
               </div>
-              <div className="border border-white/8 bg-white/[0.03] p-5">
-                <p className="text-[9px] font-bold tracking-[0.15em] uppercase text-white/50">Requirement</p>
-                <p className="text-lg font-bold mt-1.5 text-white/95">Open Source</p>
+              <div className="border border-[#38bdf8]/10 bg-[#38bdf8]/[0.03] p-5">
+                <p className="text-[9px] font-bold tracking-[0.15em] uppercase text-[#38bdf8]/50">Requirement</p>
+                <p className="text-lg font-bold mt-1.5 text-white/80">Open Source</p>
                 <p className="text-[10px] text-white/40 mt-1">Release models + learnings</p>
               </div>
             </section>
@@ -293,8 +315,8 @@ export default function App() {
 interface ShowcaseControls {
   item: ShowcaseItem;
   progress: number;
-  next: () => void;
-  prev: () => void;
+  next: (fast?: boolean) => void;
+  prev: (fast?: boolean) => void;
   openFullscreen: () => void;
 }
 
@@ -315,24 +337,29 @@ function VideoShowcase({ children }: { children: (controls: ShowcaseControls) =>
   const [fullscreen, setFullscreen] = useState(false);
   const [progress, setProgress] = useState(0);
   const [bgVisible, setBgVisible] = useState(true);
+  const [bgScale, setBgScale] = useState(1);
   const bgVideoRef = useRef<HTMLVideoElement>(null);
+  const preloadRef = useRef<HTMLVideoElement>(null);
   const rafRef = useRef<number>(0);
   const startTimeRef = useRef(0);
   const advancedRef = useRef(false);
   const item = order[current];
+  const nextItem = order[(current + 1) % order.length];
 
-  const advance = useCallback((dir: 1 | -1) => {
+  const advance = useCallback((dir: 1 | -1, fast = false) => {
     if (advancedRef.current) return;
     advancedRef.current = true;
     setProgress(0);
     setBgVisible(false);
+    setBgScale(fast ? 1 : 1.08);
     setTimeout(() => {
+      setBgScale(0.97);
       setCurrent((c) => (c + dir + order.length) % order.length);
-    }, 800);
+    }, fast ? 150 : 800);
   }, [order.length]);
 
-  const next = useCallback(() => advance(1), [advance]);
-  const prev = useCallback(() => advance(-1), [advance]);
+  const next = useCallback((fast = false) => advance(1, fast), [advance]);
+  const prev = useCallback((fast = false) => advance(-1, fast), [advance]);
 
   // When current changes, set up the new video and fade in
   useEffect(() => {
@@ -345,7 +372,7 @@ function VideoShowcase({ children }: { children: (controls: ShowcaseControls) =>
       const start = item.bgStart ?? 0;
       startTimeRef.current = start;
       v.currentTime = start;
-      v.play().then(() => setBgVisible(true)).catch(() => setBgVisible(true));
+      v.play().then(() => { setBgVisible(true); setBgScale(1); }).catch(() => { setBgVisible(true); setBgScale(1); });
     };
     // Reset src and wait for it to be ready
     v.src = item.src;
@@ -388,28 +415,39 @@ function VideoShowcase({ children }: { children: (controls: ShowcaseControls) =>
     setFullscreen(false);
   };
 
-  const nextItem = order[(current + 1) % order.length];
-
   return (
     <>
-      {/* Background video — single element, CSS crossfade */}
-      <div className="fixed inset-0 pointer-events-none select-none" aria-hidden="true">
+      {/* Background video — single element, CSS crossfade with scale + blur */}
+      <div className="fixed inset-0 pointer-events-none select-none overflow-hidden" aria-hidden="true">
         <div
-          className="w-full h-full transition-opacity duration-800 ease-in-out"
-          style={{ opacity: bgVisible ? 0.4 : 0 }}
+          className="w-full h-full transition-all duration-1000 ease-out"
+          style={{
+            opacity: bgVisible ? 0.4 : 0,
+            transform: `scale(${bgScale})`,
+            filter: bgVisible ? "blur(0px)" : "blur(8px)",
+          }}
         >
           <video
             ref={bgVideoRef}
             muted
             playsInline
+            poster={item.poster}
             className="w-full h-full object-cover"
           />
         </div>
         <div className="absolute inset-0 bg-[#0a0a0a]/60" />
       </div>
 
-      {/* Preload next video */}
-      <link rel="preload" as="video" href={nextItem.src} />
+      {/* Hidden preload of next video — browser caches it so transition is instant */}
+      <video
+        ref={preloadRef}
+        key={nextItem.src}
+        src={nextItem.src}
+        preload="auto"
+        muted
+        playsInline
+        className="hidden"
+      />
 
       {children({ item, progress, next, prev, openFullscreen })}
 
@@ -444,7 +482,7 @@ function ArtistBadge({ item, progress, next, prev, openFullscreen }: ShowcaseCon
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -6 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="mr-2"
+          className="mr-2 text-right"
         >
           <a
             href={item.socialUrl}
@@ -455,6 +493,11 @@ function ArtistBadge({ item, progress, next, prev, openFullscreen }: ShowcaseCon
           >
             {item.artist}
           </a>
+          {item.tool && (
+            <span className={`block text-[8px] transition-colors ${hovered ? "text-white/35" : "text-white/15"}`}>
+              With {item.tool}
+            </span>
+          )}
         </motion.div>
       </AnimatePresence>
 
@@ -486,28 +529,35 @@ function ArtistBadge({ item, progress, next, prev, openFullscreen }: ShowcaseCon
             className="transition-[stroke-dashoffset] duration-200"
           />
         </svg>
-        {/* Inner circle — avatar letter animates on change */}
+        {/* Inner circle — avatar animates on change */}
         <div className="w-7 h-7 rounded-full bg-white/8 flex items-center justify-center text-[10px] font-bold text-white/50 group-hover:text-[#39ff14]/80 transition-colors overflow-hidden">
           <AnimatePresence mode="wait">
-            <motion.span
+            <motion.div
               key={item.avatar}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.25 }}
-              className="group-hover:opacity-0 transition-opacity"
+              className="group-hover:opacity-0 transition-opacity w-full h-full flex items-center justify-center relative"
             >
-              {item.avatar}
-            </motion.span>
+              {item.avatar.startsWith("/") ? (
+                <>
+                  <img src={item.avatar} alt={item.artist} className="w-full h-full object-cover rounded-full" />
+                  <div className="absolute inset-0 rounded-full bg-black/50 group-hover:bg-transparent transition-colors" />
+                </>
+              ) : (
+                item.avatar
+              )}
+            </motion.div>
           </AnimatePresence>
-          <Play size={10} className="absolute opacity-0 group-hover:opacity-100 transition-opacity" />
+          <Play size={10} fill="white" className="absolute opacity-0 group-hover:opacity-100 transition-opacity text-white drop-shadow-md" />
         </div>
       </button>
 
       {/* Next arrow */}
       {SHOWCASE.length > 1 && (
         <button
-          onClick={next}
+          onClick={() => next(true)}
           className="p-0.5 hover:text-[#39ff14] text-white/20 hover:text-white/60 transition-all cursor-pointer"
         >
           <ChevronRight size={14} />
@@ -527,7 +577,6 @@ function CinemaPlayer({
   onClose: (currentIndex: number) => void;
 }) {
   const [index, setIndex] = useState(initialIndex);
-  const [showTitle, setShowTitle] = useState(true);
   const [controlsVisible, setControlsVisible] = useState(true);
   const [playing, setPlaying] = useState(true);
   const [currentTime, setCurrentTime] = useState(0);
@@ -545,7 +594,6 @@ function CinemaPlayer({
     setCurrentTime(0);
     setDuration(0);
     setPlaying(true);
-    setShowTitle(true);
   }, [order.length]);
 
   const goPrev = useCallback(() => {
@@ -553,14 +601,8 @@ function CinemaPlayer({
     setCurrentTime(0);
     setDuration(0);
     setPlaying(true);
-    setShowTitle(true);
   }, [order.length]);
 
-  // Title card fades after 2.5s, resets on navigation
-  useEffect(() => {
-    const t = setTimeout(() => setShowTitle(false), 2500);
-    return () => clearTimeout(t);
-  }, [index]);
 
   // Sync video state
   useEffect(() => {
@@ -634,6 +676,7 @@ function CinemaPlayer({
           key={item.src}
           ref={videoRef}
           src={item.src}
+          poster={item.poster}
           className="absolute inset-0 w-full h-full object-contain"
           autoPlay
           playsInline
@@ -657,25 +700,6 @@ function CinemaPlayer({
       <div className="absolute inset-x-0 top-0 h-32 pointer-events-none bg-gradient-to-b from-black/40 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 h-48 pointer-events-none bg-gradient-to-t from-black/70 to-transparent" />
 
-      {/* Title card — appears on entry and navigation, fades away */}
-      <AnimatePresence>
-        {showTitle && (
-          <motion.div
-            key={`title-${index}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className="absolute inset-0 flex items-center justify-center pointer-events-none"
-          >
-            <div className="text-center">
-              <p className="font-serif text-4xl md:text-5xl text-white/90 tracking-tight">{item.artist}</p>
-              <p className="text-xs tracking-[0.3em] uppercase text-white/30 mt-3">Art Compute Showcase</p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Controls — fade in/out with mouse movement */}
       <motion.div
         animate={{ opacity: controlsVisible ? 1 : 0 }}
@@ -689,15 +713,19 @@ function CinemaPlayer({
           rel="noopener noreferrer"
           className="absolute top-8 left-8 pointer-events-auto group flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/[0.06] backdrop-blur-sm border border-white/[0.08] hover:border-white/15 transition-all"
         >
-          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[11px] font-bold text-white/60 group-hover:text-white/90 transition-colors">
-            {item.avatar}
+          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[11px] font-bold text-white/60 group-hover:text-white/90 transition-colors overflow-hidden">
+            {item.avatar.startsWith("/") ? (
+              <img src={item.avatar} alt={item.artist} className="w-full h-full object-cover rounded-full" />
+            ) : (
+              item.avatar
+            )}
           </div>
           <div className="flex flex-col">
             <span className="font-serif text-sm text-white/70 group-hover:text-white/90 transition-colors leading-tight">
               {item.artist}
             </span>
             <span className="text-[9px] text-white/30 group-hover:text-white/50 transition-colors">
-              {item.handle}
+              {item.tool ? `With ${item.tool}` : item.handle}
             </span>
           </div>
           <ExternalLink size={11} className="text-white/20 group-hover:text-white/50 transition-colors ml-1" />
