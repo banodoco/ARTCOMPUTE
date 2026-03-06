@@ -64,6 +64,14 @@ const SHOWCASE: ShowcaseItem[] = [
     socialType: "twitter",
     avatar: "?",
   },
+  {
+    src: "/fill.mp4",
+    artist: "Unknown",
+    handle: "@unknown",
+    socialUrl: "#",
+    socialType: "twitter",
+    avatar: "?",
+  },
 ];
 
 export default function App() {
