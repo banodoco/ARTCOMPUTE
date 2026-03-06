@@ -1,10 +1,8 @@
 import { motion, AnimatePresence } from "motion/react";
 import { ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Pause, Play, X } from "lucide-react";
 import React, { useState, useEffect, useRef, useCallback, ReactNode } from "react";
-import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 const WALLET_ADDRESS = "FBXSuVueW9Z1U2RmgmYazAX1GGdzay75AKHD9ijJpszq";
-const SOLANA_RPC = "https://api.mainnet-beta.solana.com";
 const FALLBACK_BALANCE = 34.0001;
 
 interface ShowcaseItem {
@@ -14,6 +12,7 @@ interface ShowcaseItem {
   socialUrl: string;
   socialType: "twitter" | "instagram";
   avatar: string;
+  bgStart?: number; // seconds — where background preview starts (default 0)
 }
 
 const SHOWCASE: ShowcaseItem[] = [
@@ -42,15 +41,23 @@ const SHOWCASE: ShowcaseItem[] = [
     avatar: "E",
   },
   {
-    src: "/flipping_sigmas.mp4",
-    artist: "Flipping Sigmas",
-    handle: "@flipping_sigmas",
-    socialUrl: "https://twitter.com/flipping_sigmas",
+    src: "/1022-copy1.mp4",
+    artist: "Unknown",
+    handle: "@unknown",
+    socialUrl: "#",
     socialType: "twitter",
-    avatar: "F",
+    avatar: "?",
   },
   {
-    src: "/1022-copy1.mp4",
+    src: "/2_adam.mp4",
+    artist: "Unknown",
+    handle: "@unknown",
+    socialUrl: "#",
+    socialType: "twitter",
+    avatar: "?",
+  },
+  {
+    src: "/Marc Rebillet Diffused.mp4",
     artist: "Unknown",
     handle: "@unknown",
     socialUrl: "#",
@@ -66,10 +73,18 @@ export default function App() {
   useEffect(() => {
     const fetchFunds = async () => {
       try {
-        const connection = new Connection(SOLANA_RPC, "confirmed");
-        const publicKey = new PublicKey(WALLET_ADDRESS);
-        const lamports = await connection.getBalance(publicKey);
-        setBalance(lamports / LAMPORTS_PER_SOL);
+        const rpcRes = await fetch("https://solana-rpc.publicnode.com", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonrpc: "2.0", id: 1, method: "getBalance",
+            params: [WALLET_ADDRESS],
+          }),
+        });
+        if (rpcRes.ok) {
+          const rpcData = await rpcRes.json();
+          if (rpcData.result) setBalance(rpcData.result.value / 1e9);
+        }
 
         const res = await fetch(
           "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
@@ -236,7 +251,7 @@ export default function App() {
               />
               <FAQItem
                 question="Do I need prior experience?"
-                answer="Merit and reputation matter — public contributions, previous work, and clearly articulated training goals. If you're new, start small."
+                answer="Merit and reputation help — public contributions, previous work, and clearly articulated training goals — but it's okay if you're new, just start small."
               />
               <FAQItem
                 question="What happens after I get the grant?"
@@ -291,46 +306,59 @@ function VideoShowcase({ children }: { children: (controls: ShowcaseControls) =>
   const [current, setCurrent] = useState(0);
   const [fullscreen, setFullscreen] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [bgVisible, setBgVisible] = useState(true);
   const bgVideoRef = useRef<HTMLVideoElement>(null);
   const rafRef = useRef<number>(0);
   const startTimeRef = useRef(0);
   const advancedRef = useRef(false);
   const item = order[current];
 
-  const next = useCallback(() => {
+  const advance = useCallback((dir: 1 | -1) => {
     if (advancedRef.current) return;
     advancedRef.current = true;
-    setCurrent((c) => (c + 1) % order.length);
+    setProgress(0);
+    setBgVisible(false);
+    setTimeout(() => {
+      setCurrent((c) => (c + dir + order.length) % order.length);
+    }, 800);
   }, [order.length]);
 
-  const prev = useCallback(() => {
-    if (advancedRef.current) return;
-    advancedRef.current = true;
-    setCurrent((c) => (c - 1 + order.length) % order.length);
-  }, [order.length]);
+  const next = useCallback(() => advance(1), [advance]);
+  const prev = useCallback(() => advance(-1), [advance]);
 
-  // Pick a random start point and play when video changes
+  // When current changes, set up the new video and fade in
   useEffect(() => {
     advancedRef.current = false;
+    startTimeRef.current = -1; // sentinel: RAF won't update progress until playback starts
+    setProgress(0);
     const v = bgVideoRef.current;
     if (!v) return;
-    const onLoaded = () => {
-      const maxStart = Math.max(0, v.duration - BG_CLIP_DURATION);
-      const start = Math.random() * maxStart;
+    const startPlayback = () => {
+      const start = item.bgStart ?? 0;
       startTimeRef.current = start;
       v.currentTime = start;
-      v.play().catch(() => {});
+      v.play().then(() => setBgVisible(true)).catch(() => setBgVisible(true));
     };
-    v.addEventListener("loadedmetadata", onLoaded);
-    if (v.readyState >= 1) onLoaded();
-    return () => v.removeEventListener("loadedmetadata", onLoaded);
-  }, [current]);
+    // Reset src and wait for it to be ready
+    v.src = item.src;
+    v.load();
+    const onCanPlay = () => {
+      startPlayback();
+      v.removeEventListener("canplay", onCanPlay);
+    };
+    v.addEventListener("canplay", onCanPlay);
+    if (v.readyState >= 3) {
+      startPlayback();
+      v.removeEventListener("canplay", onCanPlay);
+    }
+    return () => v.removeEventListener("canplay", onCanPlay);
+  }, [current, item.src]);
 
   // Progress tracking + auto-advance at BG_CLIP_DURATION
   useEffect(() => {
     const tick = () => {
       const v = bgVideoRef.current;
-      if (v && v.duration && !isNaN(v.duration) && !advancedRef.current) {
+      if (v && v.duration && !isNaN(v.duration) && !advancedRef.current && startTimeRef.current >= 0) {
         const elapsed = v.currentTime - startTimeRef.current;
         setProgress(Math.min(1, elapsed / BG_CLIP_DURATION));
         if (elapsed >= BG_CLIP_DURATION) {
@@ -356,27 +384,19 @@ function VideoShowcase({ children }: { children: (controls: ShowcaseControls) =>
 
   return (
     <>
-      {/* Background video */}
+      {/* Background video — single element, CSS crossfade */}
       <div className="fixed inset-0 pointer-events-none select-none" aria-hidden="true">
-        <AnimatePresence>
-          <motion.div
-            key={item.src}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.4 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, ease: "easeInOut" }}
-            className="absolute inset-0"
-          >
-            <video
-              ref={bgVideoRef}
-              muted
-              playsInline
-              preload="auto"
-              className="w-full h-full object-cover"
-              src={item.src}
-            />
-          </motion.div>
-        </AnimatePresence>
+        <div
+          className="w-full h-full transition-opacity duration-800 ease-in-out"
+          style={{ opacity: bgVisible ? 0.4 : 0 }}
+        >
+          <video
+            ref={bgVideoRef}
+            muted
+            playsInline
+            className="w-full h-full object-cover"
+          />
+        </div>
         <div className="absolute inset-0 bg-[#0a0a0a]/60" />
       </div>
 
@@ -411,28 +431,22 @@ function ArtistBadge({ item, progress, next, prev, openFullscreen }: ShowcaseCon
       {/* Artist name — animates when artist changes */}
       <AnimatePresence mode="wait">
         <motion.div
-          key={item.artist + (hovered ? "-hover" : "-idle")}
+          key={item.artist}
           initial={{ opacity: 0, x: 6 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -6 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
           className="mr-2"
         >
-          {hovered ? (
-            <a
-              href={item.socialUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[10px] text-white/60 font-bold hover:text-[#39ff14]/60 transition-colors"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {item.artist}
-            </a>
-          ) : (
-            <span className="text-[9px] tracking-[0.15em] uppercase text-white/25">
-              {item.artist}
-            </span>
-          )}
+          <a
+            href={item.socialUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`text-[10px] font-bold transition-colors ${hovered ? "text-white/60 hover:text-[#39ff14]/60" : "text-white/25"}`}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {item.artist}
+          </a>
         </motion.div>
       </AnimatePresence>
 
@@ -486,7 +500,7 @@ function ArtistBadge({ item, progress, next, prev, openFullscreen }: ShowcaseCon
       {SHOWCASE.length > 1 && (
         <button
           onClick={next}
-          className="p-0.5 hover:text-[#39ff14] text-white/20 hover:text-white/60 transition-all"
+          className="p-0.5 hover:text-[#39ff14] text-white/20 hover:text-white/60 transition-all cursor-pointer"
         >
           <ChevronRight size={14} />
         </button>
@@ -809,22 +823,18 @@ function FAQItem({
   return (
     <div className="group border-b border-white/8">
       <div className="flex justify-between items-start gap-4 cursor-pointer py-4" onClick={onToggle}>
-        <h4 className="text-xs text-white/55 group-hover:text-[#39ff14]/60 transition-colors leading-relaxed">
+        <h4 className={`text-xs leading-relaxed transition-colors group-hover:text-[#39ff14]/60 ${isOpen ? "text-white/85" : "text-white/55"}`}>
           {question}
         </h4>
         <ChevronDown
           size={14}
-          className={`shrink-0 transition-transform duration-300 mt-0.5 ${isOpen ? "rotate-180" : ""} text-white/30`}
+          className={`shrink-0 mt-0.5 ${isOpen ? "rotate-180" : ""} text-white/30`}
         />
       </div>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          className="pb-4 text-xs leading-relaxed text-white/45"
-        >
+        <div className="pb-4 text-xs leading-relaxed text-white/45">
           {answer}
-        </motion.div>
+        </div>
       )}
     </div>
   );
