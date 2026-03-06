@@ -189,7 +189,7 @@ export default function App() {
 
             <section className="mt-12">
               <a
-                href="https://discord.gg/banadoco"
+                href="https://discord.gg/kEqEbsAb8Q"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 bg-[#39ff14]/15 border border-[#39ff14]/30 text-[#39ff14] text-sm hover:bg-[#39ff14]/25 transition-colors shadow-[0_0_20px_rgba(57,255,20,0.05)]"
@@ -295,7 +295,7 @@ export default function App() {
           </div>
         </div>
 
-        <footer className="border-t border-white/8 px-6 md:px-10 py-4 flex justify-between items-center text-[10px] uppercase tracking-[0.15em] text-white/30">
+        <footer className="border-t border-white/8 px-6 md:px-10 py-4 flex justify-between items-center text-[10px] uppercase tracking-[0.15em] text-white/30 backdrop-blur-[4px]">
           <span>&copy; 2026 Art Compute</span>
           <span>
             A{" "}
@@ -542,15 +542,17 @@ function ArtistBadge({ item, progress, next, prev, openFullscreen }: ShowcaseCon
             >
               {item.avatar.startsWith("/") ? (
                 <>
-                  <img src={item.avatar} alt={item.artist} className="w-full h-full object-cover rounded-full" />
-                  <div className="absolute inset-0 rounded-full bg-black/50 group-hover:bg-transparent transition-colors" />
+                  <img src={item.avatar} alt={item.artist} className="w-full h-full object-cover" />
+                  <div className={`absolute inset-0 transition-colors ${hovered ? "bg-transparent" : "bg-black/50"}`} />
                 </>
               ) : (
                 item.avatar
               )}
             </motion.div>
           </AnimatePresence>
-          <Play size={10} fill="white" className="absolute opacity-0 group-hover:opacity-100 transition-opacity text-white drop-shadow-md" />
+          <div className="absolute -inset-1 rounded-full bg-black/50 border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center" style={{ boxShadow: "0 0 8px rgba(57,255,20,0.3)" }}>
+            <Play size={12} fill="white" className="text-white ml-0.5" />
+          </div>
         </div>
       </button>
 
