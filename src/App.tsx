@@ -628,11 +628,11 @@ function CinemaPlayer({
     };
   }, [volume, muted, index]);
 
-  const togglePlay = () => {
+  const togglePlay = useCallback(() => {
     const v = videoRef.current;
     if (!v) return;
     if (v.paused) v.play(); else v.pause();
-  };
+  }, []);
 
   const seek = (e: React.MouseEvent<HTMLDivElement>) => {
     const v = videoRef.current;
@@ -660,6 +660,18 @@ function CinemaPlayer({
     resetHideTimer();
     return () => { if (hideTimer.current) clearTimeout(hideTimer.current); };
   }, [resetHideTimer]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") goNext();
+      else if (e.key === "ArrowLeft") goPrev();
+      else if (e.key === " ") { e.preventDefault(); togglePlay(); }
+      else if (e.key === "Escape") onClose(index);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [goNext, goPrev, togglePlay, onClose, index]);
 
   return (
     <motion.div
