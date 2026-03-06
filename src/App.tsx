@@ -1,102 +1,129 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
-import { motion } from "motion/react";
-import { ChevronDown, ExternalLink } from "lucide-react";
-import { useState, useEffect, ReactNode } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Pause, Play, X } from "lucide-react";
+import React, { useState, useEffect, useRef, useCallback, ReactNode } from "react";
 import { Connection, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 
 const WALLET_ADDRESS = "FBXSuVueW9Z1U2RmgmYazAX1GGdzay75AKHD9ijJpszq";
 const SOLANA_RPC = "https://api.mainnet-beta.solana.com";
 const FALLBACK_BALANCE = 34.0001;
 
+interface ShowcaseItem {
+  src: string;
+  artist: string;
+  handle: string;
+  socialUrl: string;
+  socialType: "twitter" | "instagram";
+  avatar: string;
+}
+
+const SHOWCASE: ShowcaseItem[] = [
+  {
+    src: "/ssstwitter.com_1772746835419.mp4",
+    artist: "NeRF3",
+    handle: "@nerf3_art",
+    socialUrl: "https://twitter.com/nerf3_art",
+    socialType: "twitter",
+    avatar: "N",
+  },
+  {
+    src: "/I_Wanna_Know_-_NeRF3_25mb.mp4",
+    artist: "NeRF3",
+    handle: "@nerf3_art",
+    socialUrl: "https://twitter.com/nerf3_art",
+    socialType: "twitter",
+    avatar: "N",
+  },
+  {
+    src: "/BLOOM3-HD_BANODOCU_CLIP_BY_Emma-Catnip.mp4",
+    artist: "Emma Catnip",
+    handle: "@emma_catnip",
+    socialUrl: "https://twitter.com/emma_catnip",
+    socialType: "twitter",
+    avatar: "E",
+  },
+  {
+    src: "/flipping_sigmas.mp4",
+    artist: "Flipping Sigmas",
+    handle: "@flipping_sigmas",
+    socialUrl: "https://twitter.com/flipping_sigmas",
+    socialType: "twitter",
+    avatar: "F",
+  },
+  {
+    src: "/1022-copy1.mov",
+    artist: "Unknown",
+    handle: "@unknown",
+    socialUrl: "#",
+    socialType: "twitter",
+    avatar: "?",
+  },
+];
+
 export default function App() {
   const [balance, setBalance] = useState<number | null>(null);
   const [price, setPrice] = useState<number | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  const fetchFunds = async () => {
-    try {
-      setLoading(true);
-      const connection = new Connection(SOLANA_RPC, 'confirmed');
-      const publicKey = new PublicKey(WALLET_ADDRESS);
-      const balanceInLamports = await connection.getBalance(publicKey);
-      const solBalance = balanceInLamports / LAMPORTS_PER_SOL;
-      setBalance(solBalance);
-
-      const priceResponse = await fetch("https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd");
-      if (priceResponse.ok) {
-        const priceData = await priceResponse.json();
-        setPrice(priceData.solana.usd);
-      }
-    } catch (error) {
-      console.error("Error fetching funds:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
+    const fetchFunds = async () => {
+      try {
+        const connection = new Connection(SOLANA_RPC, "confirmed");
+        const publicKey = new PublicKey(WALLET_ADDRESS);
+        const lamports = await connection.getBalance(publicKey);
+        setBalance(lamports / LAMPORTS_PER_SOL);
+
+        const res = await fetch(
+          "https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd"
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setPrice(data.solana.usd);
+        }
+      } catch (e) {
+        console.error("Error fetching funds:", e);
+      }
+    };
+
     fetchFunds();
     const interval = setInterval(fetchFunds, 60000);
     return () => clearInterval(interval);
   }, []);
 
+  const sol = balance ?? FALLBACK_BALANCE;
+  const usd = price ? (sol * price).toLocaleString("en-US", { style: "currency", currency: "USD" }) : null;
+
   return (
     <div className="h-screen scanlines grain relative overflow-hidden flex flex-col">
-      {/* Video background */}
-      <div className="fixed inset-0 pointer-events-none select-none" aria-hidden="true">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="w-full h-full object-cover opacity-40"
-          src="/ssstwitter.com_1772746835419.mp4"
-        />
-        <div className="absolute inset-0 bg-[#0a0a0a]/60" />
-      </div>
-
+      <VideoShowcase>
+        {(showcaseControls) => (
       <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
         className="relative z-10 h-full flex flex-col overflow-hidden"
       >
-        {/* Top bar */}
         <header className="border-b border-white/8 px-6 md:px-10 py-4 flex justify-between items-center">
           <h1 className="text-[10px] font-bold tracking-[0.25em] uppercase text-white/50">
             Art Compute
           </h1>
-          <span className="text-[10px] tracking-[0.15em] uppercase text-white/30">
-            Micro Grants Program
-          </span>
+          <ArtistBadge {...showcaseControls} />
         </header>
 
-        {/* Main content: side by side */}
         <div className="flex-1 flex flex-col md:flex-row min-h-0 md:overflow-hidden overflow-auto">
-          {/* Left: Hero + Info */}
+          {/* Left: Hero */}
           <div className="flex-1 px-6 md:px-12 py-10 md:py-0 md:flex md:flex-col md:justify-center md:border-r border-white/8">
             <section>
               <h2 className="font-serif text-3xl md:text-4xl font-normal leading-tight text-white/95 tracking-tight">
                 Micro Grants for<br />Open Source AI Art
               </h2>
               <p className="text-sm leading-7 text-white/75 mt-5 max-w-md">
-                Free GPU hours for artists and developers to train on top of open AI art models. You get compute, share your results and what you learned for others to use.
+                Free GPU hours for artists and developers to train on top of open AI art models.
+                You get compute, share your results and what you learned for others to use.
               </p>
               <p className="text-[11px] text-white/30 mt-2 max-w-md">
                 LoRAs, finetunes, control vectors, dataset experiments, open model research.
               </p>
             </section>
 
-            {/* Key facts */}
             <section className="grid grid-cols-3 gap-px mt-10">
               <div className="border border-white/8 bg-white/[0.03] p-5">
                 <p className="text-[9px] font-bold tracking-[0.15em] uppercase text-white/50">Compute</p>
@@ -115,7 +142,6 @@ export default function App() {
               </div>
             </section>
 
-            {/* CTA */}
             <section className="mt-12">
               <a
                 href="https://discord.gg/banadoco"
@@ -136,22 +162,24 @@ export default function App() {
             <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/35 mb-6">
               FAQ
             </h3>
-
             <FAQList>
               <FAQItem
                 question="What can you do with 10–50 GPU hours?"
                 answer={
                   <div className="space-y-3">
                     <p>
-                      More than you'd think. Modern open models let you train control vectors, LoRAs, and finetunes with very little compute.
+                      More than you'd think. Modern open models let you train control vectors,
+                      LoRAs, and finetunes with very little compute.
                     </p>
                     <p>Two examples:</p>
                     <ul className="list-none space-y-2 pl-3 border-l border-white/10">
                       <li>
-                        <span className="text-white/70">Train new control dimensions for LTX with IC-LoRAs</span> — a whole new control dimension in as little as eight hours.
+                        <span className="text-white/70">Train new control dimensions for LTX with IC-LoRAs</span>{" "}
+                        — a whole new control dimension in as little as eight hours.
                       </li>
                       <li>
-                        <span className="text-white/70">Train image-based control with edit LoRAs</span> — like Flux2 and Qwen Edit. Add new modalities for tasks they can't do out of the box.
+                        <span className="text-white/70">Train image-based control with edit LoRAs</span>{" "}
+                        — like Flux2 and Qwen Edit. Add new modalities for tasks they can't do out of the box.
                       </li>
                     </ul>
                   </div>
@@ -162,30 +190,41 @@ export default function App() {
                 answer={
                   <div className="space-y-3 leading-relaxed">
                     <p>
-                      Random degens created a memecoin based on one of my tweets. This resulted in me getting creator fees and I donated 100% of them to open source to not profit off their gambling. <a href="https://pom.voyage/assorted/accountability#pisscoin-grants" target="_blank" rel="noopener noreferrer" className="underline text-white/50 hover:text-[#39ff14]/60">Full details here.</a>
+                      Random degens created a memecoin based on one of my tweets. This resulted in me
+                      getting creator fees and I donated 100% of them to open source to not profit off
+                      their gambling.{" "}
+                      <a href="https://pom.voyage/assorted/accountability#pisscoin-grants" target="_blank" rel="noopener noreferrer" className="underline text-white/50 hover:text-[#39ff14]/60">
+                        Full details here.
+                      </a>
                     </p>
+                    <p>Started with ~{FALLBACK_BALANCE} SOL{usd && <> ({usd})</>}.</p>
                     <p>
-                      Started with ~{FALLBACK_BALANCE} SOL{price && <> ({((FALLBACK_BALANCE) * price).toLocaleString('en-US', { style: 'currency', currency: 'USD' })})</>}.
-                    </p>
-                    <p>
-                      Current balance: <span className="text-white/70 font-bold">{balance !== null ? balance.toLocaleString() : FALLBACK_BALANCE.toLocaleString()} SOL</span>
+                      Current balance:{" "}
+                      <span className="text-white/70 font-bold">{sol.toLocaleString()} SOL</span>
                       {price && (
                         <span className="text-[#39ff14]/70 font-bold">
-                          {' '}~ {((balance || FALLBACK_BALANCE) * price).toLocaleString('en-US', { style: 'currency', currency: 'USD' })}
+                          {" "}~ {(sol * price).toLocaleString("en-US", { style: "currency", currency: "USD" })}
                         </span>
                       )}
                     </p>
                     {price && (
                       <p>
-                        Roughly <span className="text-white/70 font-bold">
-                          {Math.floor(((balance || FALLBACK_BALANCE) * price) / 45)} grants
-                        </span> in this batch.
+                        Roughly{" "}
+                        <span className="text-white/70 font-bold">
+                          {Math.floor((sol * price) / 45)} grants
+                        </span>{" "}
+                        in this batch.
                       </p>
                     )}
                     <div className="space-y-1 pt-2 text-[10px]">
                       <p className="uppercase tracking-widest font-bold text-white/30">Wallet</p>
                       <p>Address: <span className="break-all select-all text-white/40">{WALLET_ADDRESS}</span></p>
-                      <p>Explorer: <a href={`https://solscan.io/account/${WALLET_ADDRESS}`} target="_blank" rel="noopener noreferrer" className="underline text-white/40 hover:text-[#39ff14]/60">solscan.io</a></p>
+                      <p>
+                        Explorer:{" "}
+                        <a href={`https://solscan.io/account/${WALLET_ADDRESS}`} target="_blank" rel="noopener noreferrer" className="underline text-white/40 hover:text-[#39ff14]/60">
+                          solscan.io
+                        </a>
+                      </p>
                       <p>Network: Solana Mainnet</p>
                     </div>
                   </div>
@@ -211,13 +250,524 @@ export default function App() {
           </div>
         </div>
 
-        {/* Footer */}
         <footer className="border-t border-white/8 px-6 md:px-10 py-4 flex justify-between items-center text-[10px] uppercase tracking-[0.15em] text-white/30">
           <span>&copy; 2026 Art Compute</span>
-          <span>A <a href="https://banodoco.ai" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#39ff14]/40">Banodoco</a> project</span>
+          <span>
+            A{" "}
+            <a href="https://banodoco.ai" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#39ff14]/40">
+              Banodoco
+            </a>{" "}
+            project
+          </span>
         </footer>
       </motion.main>
+        )}
+      </VideoShowcase>
     </div>
+  );
+}
+
+interface ShowcaseControls {
+  item: ShowcaseItem;
+  progress: number;
+  next: () => void;
+  prev: () => void;
+  openFullscreen: () => void;
+}
+
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+const BG_CLIP_DURATION = 15; // seconds per video in background mode
+
+function VideoShowcase({ children }: { children: (controls: ShowcaseControls) => ReactNode }) {
+  const [order] = useState(() => shuffle(SHOWCASE));
+  const [current, setCurrent] = useState(0);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const bgVideoRef = useRef<HTMLVideoElement>(null);
+  const rafRef = useRef<number>(0);
+  const startTimeRef = useRef(0);
+  const advancedRef = useRef(false);
+  const item = order[current];
+
+  const next = useCallback(() => {
+    if (advancedRef.current) return;
+    advancedRef.current = true;
+    setCurrent((c) => (c + 1) % order.length);
+  }, [order.length]);
+
+  const prev = useCallback(() => {
+    if (advancedRef.current) return;
+    advancedRef.current = true;
+    setCurrent((c) => (c - 1 + order.length) % order.length);
+  }, [order.length]);
+
+  // Pick a random start point and play when video changes
+  useEffect(() => {
+    advancedRef.current = false;
+    const v = bgVideoRef.current;
+    if (!v) return;
+    const onLoaded = () => {
+      const maxStart = Math.max(0, v.duration - BG_CLIP_DURATION);
+      const start = Math.random() * maxStart;
+      startTimeRef.current = start;
+      v.currentTime = start;
+      v.play().catch(() => {});
+    };
+    v.addEventListener("loadedmetadata", onLoaded);
+    if (v.readyState >= 1) onLoaded();
+    return () => v.removeEventListener("loadedmetadata", onLoaded);
+  }, [current]);
+
+  // Progress tracking + auto-advance at BG_CLIP_DURATION
+  useEffect(() => {
+    const tick = () => {
+      const v = bgVideoRef.current;
+      if (v && v.duration && !isNaN(v.duration) && !advancedRef.current) {
+        const elapsed = v.currentTime - startTimeRef.current;
+        setProgress(Math.min(1, elapsed / BG_CLIP_DURATION));
+        if (elapsed >= BG_CLIP_DURATION) {
+          next();
+        }
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [next]);
+
+  const openFullscreen = () => {
+    setFullscreen(true);
+  };
+
+  const handleCinemaClose = (newIndex: number) => {
+    setCurrent(newIndex);
+    setFullscreen(false);
+  };
+
+  return (
+    <>
+      {/* Background video */}
+      <div className="fixed inset-0 pointer-events-none select-none" aria-hidden="true">
+        <AnimatePresence>
+          <motion.div
+            key={item.src}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.4 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.2, ease: "easeInOut" }}
+            className="absolute inset-0"
+          >
+            <video
+              ref={bgVideoRef}
+              muted
+              playsInline
+              className="w-full h-full object-cover"
+              src={item.src}
+            />
+          </motion.div>
+        </AnimatePresence>
+        <div className="absolute inset-0 bg-[#0a0a0a]/60" />
+      </div>
+
+      {children({ item, progress, next, prev, openFullscreen })}
+
+      {/* Fullscreen cinema player */}
+      <AnimatePresence>
+        {fullscreen && <CinemaPlayer order={order} initialIndex={current} onClose={handleCinemaClose} />}
+      </AnimatePresence>
+    </>
+  );
+}
+
+function ArtistBadge({ item, progress, next, prev, openFullscreen }: ShowcaseControls) {
+  const [hovered, setHovered] = useState(false);
+
+  const size = 34;
+  const stroke = 2;
+  const radius = (size - stroke) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const dashOffset = circumference * (1 - progress);
+
+  return (
+    <div
+      className="flex items-center gap-1"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {/* Artist name — animates when artist changes */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={item.artist + (hovered ? "-hover" : "-idle")}
+          initial={{ opacity: 0, x: 6 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -6 }}
+          transition={{ duration: 0.3, ease: "easeOut" }}
+          className="mr-2"
+        >
+          {hovered ? (
+            <a
+              href={item.socialUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] text-white/60 font-bold hover:text-[#39ff14]/60 transition-colors"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {item.artist}
+            </a>
+          ) : (
+            <span className="text-[9px] tracking-[0.15em] uppercase text-white/25">
+              {item.artist}
+            </span>
+          )}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Avatar with progress ring */}
+      <button
+        onClick={openFullscreen}
+        className="group relative flex items-center justify-center cursor-pointer"
+      >
+        {/* SVG progress ring */}
+        <svg width={size} height={size} className="absolute -rotate-90">
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke="rgba(255,255,255,0.08)"
+            strokeWidth={stroke}
+          />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            fill="none"
+            stroke="rgba(57,255,20,0.5)"
+            strokeWidth={stroke}
+            strokeDasharray={circumference}
+            strokeDashoffset={dashOffset}
+            strokeLinecap="round"
+            className="transition-[stroke-dashoffset] duration-200"
+          />
+        </svg>
+        {/* Inner circle — avatar letter animates on change */}
+        <div className="w-7 h-7 rounded-full bg-white/8 flex items-center justify-center text-[10px] font-bold text-white/50 group-hover:text-[#39ff14]/80 transition-colors overflow-hidden">
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={item.avatar}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.25 }}
+              className="group-hover:opacity-0 transition-opacity"
+            >
+              {item.avatar}
+            </motion.span>
+          </AnimatePresence>
+          <Play size={10} className="absolute opacity-0 group-hover:opacity-100 transition-opacity" />
+        </div>
+      </button>
+
+      {/* Next arrow */}
+      {SHOWCASE.length > 1 && (
+        <button
+          onClick={next}
+          className="p-0.5 hover:text-[#39ff14] text-white/20 hover:text-white/60 transition-all"
+        >
+          <ChevronRight size={14} />
+        </button>
+      )}
+    </div>
+  );
+}
+
+function CinemaPlayer({
+  order,
+  initialIndex,
+  onClose,
+}: {
+  order: ShowcaseItem[];
+  initialIndex: number;
+  onClose: (currentIndex: number) => void;
+}) {
+  const [index, setIndex] = useState(initialIndex);
+  const [showTitle, setShowTitle] = useState(true);
+  const [controlsVisible, setControlsVisible] = useState(true);
+  const [playing, setPlaying] = useState(true);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(0.8);
+  const [muted, setMuted] = useState(false);
+  const [showVolume, setShowVolume] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const hideTimer = useRef<ReturnType<typeof setTimeout>>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const item = order[index];
+
+  const goNext = useCallback(() => {
+    setIndex((i) => (i + 1) % order.length);
+    setCurrentTime(0);
+    setDuration(0);
+    setPlaying(true);
+    setShowTitle(true);
+  }, [order.length]);
+
+  const goPrev = useCallback(() => {
+    setIndex((i) => (i - 1 + order.length) % order.length);
+    setCurrentTime(0);
+    setDuration(0);
+    setPlaying(true);
+    setShowTitle(true);
+  }, [order.length]);
+
+  // Title card fades after 2.5s, resets on navigation
+  useEffect(() => {
+    const t = setTimeout(() => setShowTitle(false), 2500);
+    return () => clearTimeout(t);
+  }, [index]);
+
+  // Sync video state
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.volume = volume;
+    v.muted = muted;
+    const onTime = () => setCurrentTime(v.currentTime);
+    const onMeta = () => setDuration(v.duration);
+    const onPlay = () => setPlaying(true);
+    const onPause = () => setPlaying(false);
+    v.addEventListener("timeupdate", onTime);
+    v.addEventListener("loadedmetadata", onMeta);
+    v.addEventListener("play", onPlay);
+    v.addEventListener("pause", onPause);
+    return () => {
+      v.removeEventListener("timeupdate", onTime);
+      v.removeEventListener("loadedmetadata", onMeta);
+      v.removeEventListener("play", onPlay);
+      v.removeEventListener("pause", onPause);
+    };
+  }, [volume, muted, index]);
+
+  const togglePlay = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) v.play(); else v.pause();
+  };
+
+  const seek = (e: React.MouseEvent<HTMLDivElement>) => {
+    const v = videoRef.current;
+    const bar = progressRef.current;
+    if (!v || !bar) return;
+    const rect = bar.getBoundingClientRect();
+    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    v.currentTime = pct * v.duration;
+  };
+
+  const fmt = (s: number) => {
+    const m = Math.floor(s / 60);
+    const sec = Math.floor(s % 60);
+    return `${m}:${sec.toString().padStart(2, "0")}`;
+  };
+
+  // Auto-hide controls after 3s of no movement
+  const resetHideTimer = useCallback(() => {
+    setControlsVisible(true);
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    hideTimer.current = setTimeout(() => setControlsVisible(false), 3000);
+  }, []);
+
+  useEffect(() => {
+    resetHideTimer();
+    return () => { if (hideTimer.current) clearTimeout(hideTimer.current); };
+  }, [resetHideTimer]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="fixed inset-0 z-50 bg-black"
+      onMouseMove={resetHideTimer}
+      onClick={resetHideTimer}
+      style={{ cursor: controlsVisible ? "auto" : "none" }}
+    >
+      {/* Video with crossfade */}
+      <AnimatePresence>
+        <motion.video
+          key={item.src}
+          ref={videoRef}
+          src={item.src}
+          className="absolute inset-0 w-full h-full object-contain"
+          autoPlay
+          playsInline
+          onEnded={goNext}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
+        />
+      </AnimatePresence>
+
+      {/* Cinematic vignette */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%)",
+        }}
+      />
+
+      {/* Subtle top/bottom letterbox gradient */}
+      <div className="absolute inset-x-0 top-0 h-32 pointer-events-none bg-gradient-to-b from-black/40 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-48 pointer-events-none bg-gradient-to-t from-black/70 to-transparent" />
+
+      {/* Title card — appears on entry and navigation, fades away */}
+      <AnimatePresence>
+        {showTitle && (
+          <motion.div
+            key={`title-${index}`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          >
+            <div className="text-center">
+              <p className="font-serif text-4xl md:text-5xl text-white/90 tracking-tight">{item.artist}</p>
+              <p className="text-xs tracking-[0.3em] uppercase text-white/30 mt-3">Art Compute Showcase</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Controls — fade in/out with mouse movement */}
+      <motion.div
+        animate={{ opacity: controlsVisible ? 1 : 0 }}
+        transition={{ duration: 0.5 }}
+        className="absolute inset-0 pointer-events-none"
+      >
+        {/* Top left: artist badge */}
+        <a
+          href={item.socialUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute top-8 left-8 pointer-events-auto group flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/[0.06] backdrop-blur-sm border border-white/[0.08] hover:border-white/15 transition-all"
+        >
+          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-[11px] font-bold text-white/60 group-hover:text-white/90 transition-colors">
+            {item.avatar}
+          </div>
+          <div className="flex flex-col">
+            <span className="font-serif text-sm text-white/70 group-hover:text-white/90 transition-colors leading-tight">
+              {item.artist}
+            </span>
+            <span className="text-[9px] text-white/30 group-hover:text-white/50 transition-colors">
+              {item.handle}
+            </span>
+          </div>
+          <ExternalLink size={11} className="text-white/20 group-hover:text-white/50 transition-colors ml-1" />
+        </a>
+
+        {/* Top right: close */}
+        <button
+          onClick={() => onClose(index)}
+          className="absolute top-8 right-8 pointer-events-auto p-3 text-white/30 hover:text-white/80 transition-colors duration-300"
+        >
+          <X size={20} strokeWidth={1.5} />
+        </button>
+
+        {/* Bottom bar */}
+        <div className="absolute bottom-0 inset-x-0 px-10 pb-8 pt-16 pointer-events-auto space-y-5">
+          {/* Progress bar */}
+          <div
+            ref={progressRef}
+            className="group w-full h-1 bg-white/10 cursor-pointer relative"
+            onClick={seek}
+          >
+            <div
+              className="h-full bg-white/40 group-hover:bg-white/60 transition-colors relative"
+              style={{ width: duration ? `${(currentTime / duration) * 100}%` : "0%" }}
+            >
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-white opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+          </div>
+
+          {/* Controls row */}
+          <div className="flex justify-between items-center">
+            {/* Left: play + volume + time */}
+            <div className="flex items-center gap-5">
+              <button onClick={togglePlay} className="text-white/50 hover:text-white/90 transition-colors">
+                {playing ? (
+                  <Pause size={16} />
+                ) : (
+                  <Play size={16} fill="currentColor" />
+                )}
+              </button>
+
+              <div
+                className="flex items-center gap-2 relative"
+                onMouseEnter={() => setShowVolume(true)}
+                onMouseLeave={() => setShowVolume(false)}
+              >
+                <button
+                  onClick={() => setMuted(!muted)}
+                  className="text-white/40 hover:text-white/70 transition-colors"
+                >
+                  {muted || volume === 0 ? (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><line x1="23" y1="9" x2="17" y2="15" /><line x1="17" y1="9" x2="23" y2="15" /></svg>
+                  ) : (
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" /><path d="M19.07 4.93a10 10 0 0 1 0 14.14" /><path d="M15.54 8.46a5 5 0 0 1 0 7.07" /></svg>
+                  )}
+                </button>
+                {showVolume && (
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={muted ? 0 : volume}
+                    onChange={(e) => { setVolume(parseFloat(e.target.value)); setMuted(false); }}
+                    className="w-16 h-0.5 appearance-none bg-white/20 rounded-full cursor-pointer accent-white/60 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white/70"
+                  />
+                )}
+              </div>
+
+              <span className="text-[10px] text-white/25 font-mono tabular-nums">
+                {fmt(currentTime)} / {fmt(duration)}
+              </span>
+            </div>
+
+            {/* Right: navigation */}
+            {order.length > 1 && (
+              <div className="flex items-center gap-5">
+                <button
+                  onClick={goPrev}
+                  className="text-white/25 hover:text-white/70 transition-colors duration-300"
+                >
+                  <ChevronLeft size={18} strokeWidth={1.5} />
+                </button>
+                <span className="text-[9px] tracking-[0.2em] uppercase text-white/25 tabular-nums">
+                  {index + 1} / {order.length}
+                </span>
+                <button
+                  onClick={goNext}
+                  className="text-white/25 hover:text-white/70 transition-colors duration-300"
+                >
+                  <ChevronRight size={18} strokeWidth={1.5} />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
   );
 }
 
@@ -226,7 +776,7 @@ function FAQList({ children }: { children: ReactNode }) {
   const items = Array.isArray(children) ? children : [children];
 
   return (
-    <div className="space-y-0">
+    <div>
       {items.map((child: any, i: number) => ({
         ...child,
         props: {
@@ -239,25 +789,32 @@ function FAQList({ children }: { children: ReactNode }) {
   );
 }
 
-function FAQItem({ question, answer, isOpen = false, onToggle }: { question: string; answer: ReactNode; isOpen?: boolean; onToggle?: () => void }) {
+function FAQItem({
+  question,
+  answer,
+  isOpen = false,
+  onToggle,
+}: {
+  question: string;
+  answer: ReactNode;
+  isOpen?: boolean;
+  onToggle?: () => void;
+}) {
   return (
     <div className="group border-b border-white/8">
-      <div
-        className="flex justify-between items-start gap-4 cursor-pointer py-4"
-        onClick={onToggle}
-      >
+      <div className="flex justify-between items-start gap-4 cursor-pointer py-4" onClick={onToggle}>
         <h4 className="text-xs text-white/55 group-hover:text-[#39ff14]/60 transition-colors leading-relaxed">
           {question}
         </h4>
         <ChevronDown
           size={14}
-          className={`shrink-0 transition-transform duration-300 mt-0.5 ${isOpen ? 'rotate-180' : ''} text-white/30`}
+          className={`shrink-0 transition-transform duration-300 mt-0.5 ${isOpen ? "rotate-180" : ""} text-white/30`}
         />
       </div>
       {isOpen && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
+          animate={{ opacity: 1, height: "auto" }}
           className="pb-4 text-xs leading-relaxed text-white/45"
         >
           {answer}
