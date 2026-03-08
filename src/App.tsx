@@ -203,7 +203,7 @@ export default function App() {
 
           {/* Right: FAQ */}
           <div className="px-5 md:flex-1 md:px-10 py-5 md:py-16 md:max-w-md md:overflow-y-auto">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/35 mb-3 md:mb-6">
+            <h3 className="text-xs font-bold uppercase tracking-[0.25em] text-white/60 mb-3 md:mb-6 border-b border-white/10 pb-2">
               FAQ
             </h3>
             <FAQList>
