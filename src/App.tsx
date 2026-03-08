@@ -148,7 +148,7 @@ export default function App() {
       >
         <header className="border-b border-white/8 px-6 md:px-10 py-4 flex justify-between items-center">
           <h1 className="text-[10px] font-bold tracking-[0.25em] uppercase text-white/50">
-            Art Compute
+            ArtCompute
           </h1>
           <ArtistBadge {...showcaseControls} />
         </header>
@@ -296,7 +296,7 @@ export default function App() {
         </div>
 
         <footer className="border-t border-white/8 px-6 md:px-10 py-4 flex justify-between items-center text-[10px] uppercase tracking-[0.15em] text-white/30 backdrop-blur-[4px]">
-          <span>&copy; 2026 Art Compute</span>
+          <span>&copy; 2026 ArtCompute</span>
           <span>
             A{" "}
             <a href="https://banodoco.ai" target="_blank" rel="noopener noreferrer" className="underline hover:text-[#39ff14]/40">
