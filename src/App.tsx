@@ -26,7 +26,6 @@ const SHOWCASE: ShowcaseItem[] = [
     socialType: "twitter",
     avatar: "/datavoid.jpg",
     poster: "/datavoid_poster.jpg",
-    tool: "NeRF",
   },
   {
     src: "/visualfrisson.mp4",
@@ -146,7 +145,7 @@ export default function App() {
         transition={{ duration: 1.2, ease: "easeOut" }}
         className="relative z-10 h-full flex flex-col overflow-hidden"
       >
-        <header className="border-b border-white/8 px-6 md:px-10 py-4 flex justify-between items-center">
+        <header className="border-b border-white/8 px-5 md:px-10 py-3 md:py-4 flex justify-between items-center">
           <h1 className="text-[10px] font-bold tracking-[0.25em] uppercase text-white/50">
             ArtCompute
           </h1>
@@ -155,48 +154,48 @@ export default function App() {
 
         <div className="flex-1 flex flex-col md:flex-row min-h-0 md:overflow-hidden overflow-auto">
           {/* Left: Hero */}
-          <div className="flex-1 px-6 md:px-12 py-10 md:py-0 md:flex md:flex-col md:justify-center md:border-r border-white/8">
+          <div className="flex-1 px-5 md:px-12 py-5 md:py-0 md:flex md:flex-col md:justify-center md:border-r border-white/8">
             <section>
-              <h2 className="font-serif text-3xl md:text-4xl font-normal leading-tight text-white/95 tracking-tight">
+              <h2 className="font-serif text-2xl md:text-4xl font-normal leading-tight text-white/95 tracking-tight">
                 Micro Grants for<br />Open Source AI Art
               </h2>
-              <p className="text-sm leading-7 text-white/75 mt-5 max-w-md">
+              <p className="text-xs md:text-sm leading-6 md:leading-7 text-white/75 mt-3 md:mt-5 max-w-md">
                 Free GPU hours for artists and developers to train on top of open AI art models.
                 You get compute, share your results and what you learned for others to use.
               </p>
-              <p className="text-[11px] text-white/30 mt-2 max-w-md">
+              <p className="text-[10px] md:text-[11px] text-white/30 mt-1.5 md:mt-2 max-w-md">
                 LoRAs, finetunes, control vectors, dataset experiments, open model research.
               </p>
             </section>
 
-            <section className="grid grid-cols-3 gap-px mt-10">
-              <div className="border border-[#39ff14]/10 bg-[#39ff14]/[0.03] p-5">
-                <p className="text-[9px] font-bold tracking-[0.15em] uppercase text-[#39ff14]/40">Compute</p>
-                <p className="text-lg font-bold mt-1.5 text-white/80">10–50 GPU hrs</p>
-                <p className="text-[10px] text-white/40 mt-1">Choose your machine</p>
+            <section className="grid grid-cols-3 gap-px mt-5 md:mt-10">
+              <div className="border border-[#39ff14]/10 bg-[#39ff14]/[0.03] p-2.5 md:p-5">
+                <p className="text-[8px] md:text-[9px] font-bold tracking-[0.15em] uppercase text-[#39ff14]/40">Compute</p>
+                <p className="text-xs md:text-lg font-bold mt-1 md:mt-1.5 text-white/80">10–50 GPU hrs</p>
+                <p className="text-[9px] md:text-[10px] text-white/40 mt-0.5 md:mt-1">Choose your machine</p>
               </div>
-              <div className="border border-[#a78bfa]/10 bg-[#a78bfa]/[0.03] p-5">
-                <p className="text-[9px] font-bold tracking-[0.15em] uppercase text-[#a78bfa]/50">How it works</p>
-                <p className="text-lg font-bold mt-1.5 text-white/80">Automated approval</p>
-                <p className="text-[10px] text-white/40 mt-1">AI-decision in seconds</p>
+              <div className="border border-[#a78bfa]/10 bg-[#a78bfa]/[0.03] p-2.5 md:p-5">
+                <p className="text-[8px] md:text-[9px] font-bold tracking-[0.15em] uppercase text-[#a78bfa]/50">How it works</p>
+                <p className="text-xs md:text-lg font-bold mt-1 md:mt-1.5 text-white/80">Auto approval</p>
+                <p className="text-[9px] md:text-[10px] text-white/40 mt-0.5 md:mt-1">AI-decision in seconds</p>
               </div>
-              <div className="border border-[#38bdf8]/10 bg-[#38bdf8]/[0.03] p-5">
-                <p className="text-[9px] font-bold tracking-[0.15em] uppercase text-[#38bdf8]/50">Requirement</p>
-                <p className="text-lg font-bold mt-1.5 text-white/80">Open Source</p>
-                <p className="text-[10px] text-white/40 mt-1">Release models + learnings</p>
+              <div className="border border-[#38bdf8]/10 bg-[#38bdf8]/[0.03] p-2.5 md:p-5">
+                <p className="text-[8px] md:text-[9px] font-bold tracking-[0.15em] uppercase text-[#38bdf8]/50">Requirement</p>
+                <p className="text-xs md:text-lg font-bold mt-1 md:mt-1.5 text-white/80">Open Source</p>
+                <p className="text-[9px] md:text-[10px] text-white/40 mt-0.5 md:mt-1">Release models + learnings</p>
               </div>
             </section>
 
-            <section className="mt-12">
+            <section className="mt-6 md:mt-12">
               <a
                 href="https://discord.gg/kEqEbsAb8Q"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 bg-[#39ff14]/15 border border-[#39ff14]/30 text-[#39ff14] text-sm hover:bg-[#39ff14]/25 transition-colors shadow-[0_0_20px_rgba(57,255,20,0.05)]"
+                className="inline-flex items-center gap-2 px-5 md:px-6 py-2.5 md:py-3 bg-[#39ff14]/15 border border-[#39ff14]/30 text-[#39ff14] text-xs md:text-sm hover:bg-[#39ff14]/25 transition-colors shadow-[0_0_20px_rgba(57,255,20,0.05)]"
               >
                 Request Compute <ExternalLink size={14} />
               </a>
-              <p className="text-xs text-white/55 mt-3 max-w-sm leading-5">
+              <p className="text-[11px] md:text-xs text-white/55 mt-2 md:mt-3 max-w-sm leading-5">
                 Request in Discord &rarr; AI reviews &rarr; response in minutes.
               </p>
             </section>
@@ -295,7 +294,7 @@ export default function App() {
           </div>
         </div>
 
-        <footer className="border-t border-white/8 px-6 md:px-10 py-4 flex justify-between items-center text-[10px] uppercase tracking-[0.15em] text-white/30 backdrop-blur-[4px]">
+        <footer className="border-t border-white/8 px-5 md:px-10 py-3 md:py-4 flex justify-between items-center text-[10px] uppercase tracking-[0.15em] text-white/30 backdrop-blur-[4px]">
           <span>&copy; 2026 ArtCompute</span>
           <span>
             A{" "}
