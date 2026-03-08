@@ -56,7 +56,7 @@ const SHOWCASE: ShowcaseItem[] = [
     avatar: "/hannah_submarine.jpg",
     poster: "/hannah_submarine_poster.jpg",
     bgStart: 5,
-    tool: "LTX",
+    tool: "LTX1",
   },
   {
     src: "/_ArtOnTap.mp4",
