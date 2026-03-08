@@ -134,7 +134,7 @@ export default function App() {
   const usd = price ? (sol * price).toLocaleString("en-US", { style: "currency", currency: "USD" }) : null;
 
   return (
-    <div className="h-screen scanlines grain relative overflow-hidden flex flex-col">
+    <div className="min-h-screen md:h-screen scanlines grain relative md:overflow-hidden overflow-auto flex flex-col">
       {/* Preload all profile pictures */}
       {SHOWCASE.map((s) => s.avatar.startsWith("/") ? <link key={s.avatar} rel="preload" as="image" href={s.avatar} /> : null)}
       <VideoShowcase>
@@ -143,7 +143,7 @@ export default function App() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1.2, ease: "easeOut" }}
-        className="relative z-10 h-full flex flex-col overflow-hidden"
+        className="relative z-10 md:h-full flex flex-col md:overflow-hidden"
       >
         <header className="border-b border-white/8 px-5 md:px-10 py-3 md:py-4 flex justify-between items-center">
           <h1 className="text-[10px] font-bold tracking-[0.25em] uppercase text-white/50">
@@ -152,7 +152,7 @@ export default function App() {
           <ArtistBadge {...showcaseControls} />
         </header>
 
-        <div className="flex-1 flex flex-col md:flex-row min-h-0 md:overflow-hidden overflow-auto">
+        <div className="flex-1 flex flex-col md:flex-row min-h-0 md:overflow-hidden">
           {/* Left: Hero */}
           <div className="flex-1 px-5 md:px-12 py-5 md:py-0 md:flex md:flex-col md:justify-center md:border-r border-white/8">
             <section>
@@ -202,8 +202,8 @@ export default function App() {
           </div>
 
           {/* Right: FAQ */}
-          <div className="flex-1 px-6 md:px-10 py-10 md:py-16 md:max-w-md overflow-y-auto">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/35 mb-6">
+          <div className="px-5 md:flex-1 md:px-10 py-5 md:py-16 md:max-w-md md:overflow-y-auto">
+            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/35 mb-3 md:mb-6">
               FAQ
             </h3>
             <FAQList>
