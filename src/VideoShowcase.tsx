@@ -107,6 +107,7 @@ export interface ShowcaseControls {
   prev: (fast?: boolean) => void;
   openFullscreen: () => void;
   featured: boolean;
+  autoAdvanced: boolean;
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -143,6 +144,7 @@ export function VideoShowcase({ children }: { children: (controls: ShowcaseContr
   const [progress, setProgress] = useState(0);
   const [bgVisible, setBgVisible] = useState(true);
   const [bgScale, setBgScale] = useState(1);
+  const [autoAdvanced, setAutoAdvanced] = useState(false);
   const bgVideoRef = useRef<HTMLVideoElement>(null);
   const preloadRef = useRef<HTMLVideoElement>(null);
   const rafRef = useRef<number>(0);
@@ -154,6 +156,7 @@ export function VideoShowcase({ children }: { children: (controls: ShowcaseContr
   const advance = useCallback((dir: 1 | -1, fast = false) => {
     if (advancedRef.current) return;
     advancedRef.current = true;
+    setAutoAdvanced(!fast);
     setProgress(0);
     setBgVisible(false);
     setBgScale(fast ? 1 : 1.08);
@@ -249,7 +252,7 @@ export function VideoShowcase({ children }: { children: (controls: ShowcaseContr
         className="hidden"
       />
 
-      {children({ item, progress, next, prev, openFullscreen, featured: featured && current === 0 })}
+      {children({ item, progress, next, prev, openFullscreen, featured: featured && current === 0, autoAdvanced })}
 
       <AnimatePresence>
         {fullscreen && <CinemaPlayer order={order} initialIndex={current} onClose={handleCinemaClose} />}
@@ -258,19 +261,28 @@ export function VideoShowcase({ children }: { children: (controls: ShowcaseContr
   );
 }
 
-export function ArtistBadge({ item, progress, next, prev, openFullscreen, featured }: ShowcaseControls) {
+export function ArtistBadge({ item, progress, next, prev, openFullscreen, featured, autoAdvanced }: ShowcaseControls) {
   const [hovered, setHovered] = useState(false);
   const [pulsing, setPulsing] = useState(false);
-  const hasPlayedRef = useRef(false);
+  const hasPlayedFeaturedRef = useRef(false);
 
+  // Pulse on featured load (once) or every auto-advance
   useEffect(() => {
-    if (featured && !hasPlayedRef.current) {
-      hasPlayedRef.current = true;
+    if (featured && !hasPlayedFeaturedRef.current) {
+      hasPlayedFeaturedRef.current = true;
       setPulsing(true);
-      const timer = setTimeout(() => setPulsing(false), 3000);
+      const timer = setTimeout(() => setPulsing(false), 3200);
       return () => clearTimeout(timer);
     }
   }, [featured]);
+
+  useEffect(() => {
+    if (autoAdvanced) {
+      setPulsing(true);
+      const timer = setTimeout(() => setPulsing(false), 3200);
+      return () => clearTimeout(timer);
+    }
+  }, [item.artist]); // re-trigger each time artist changes via auto-advance
 
   const size = 34;
   const stroke = 2;
@@ -352,7 +364,7 @@ export function ArtistBadge({ item, progress, next, prev, openFullscreen, featur
                   <div
                     className={`absolute inset-0 transition-colors ${hovered ? "bg-transparent" : "bg-black/50"}`}
                     style={pulsing ? {
-                      animation: "avatarPulse 1s ease-in-out 3",
+                      animation: "avatarPulse 1.5s ease-in-out 2",
                     } : undefined}
                   />
                 </>
