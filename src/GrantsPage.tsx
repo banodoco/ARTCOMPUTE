@@ -26,7 +26,7 @@ interface Grant {
   approved_at: string | null;
   paid_at: string | null;
   rejected_at: string | null;
-  attachment_urls: string[];
+  attachment_urls: { url: string; filename: string }[];
 }
 
 interface Member {
@@ -415,11 +415,11 @@ export default function GrantsPage() {
                                 Attachments
                               </p>
                               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {grant.attachment_urls.map((url, i) =>
-                                  /\.(mp4|webm|mov)$/i.test(url) ? (
+                                {grant.attachment_urls.map((att, i) =>
+                                  /\.(mp4|webm|mov)$/i.test(att.filename) ? (
                                     <video
                                       key={i}
-                                      src={url}
+                                      src={att.url}
                                       controls
                                       muted
                                       playsInline
@@ -428,14 +428,14 @@ export default function GrantsPage() {
                                   ) : (
                                     <a
                                       key={i}
-                                      href={url}
+                                      href={att.url}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="block"
                                     >
                                       <img
-                                        src={url}
-                                        alt={`Attachment ${i + 1}`}
+                                        src={att.url}
+                                        alt={att.filename}
                                         className="w-full rounded border border-white/8 bg-white/[0.02] hover:border-white/20 transition-colors"
                                       />
                                     </a>
