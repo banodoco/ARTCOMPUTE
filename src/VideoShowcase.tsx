@@ -106,6 +106,7 @@ export interface ShowcaseControls {
   next: (fast?: boolean) => void;
   prev: (fast?: boolean) => void;
   openFullscreen: () => void;
+  featured: boolean;
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -119,11 +120,11 @@ function shuffle<T>(arr: T[]): T[] {
 
 const BG_CLIP_DURATION = 15;
 
-function getInitialOrder(): ShowcaseItem[] {
+function getInitialOrder(): { order: ShowcaseItem[]; featured: boolean } {
   const params = new URLSearchParams(window.location.search);
   const art = params.get("art")?.toLowerCase();
   const shuffled = shuffle(SHOWCASE);
-  if (!art) return shuffled;
+  if (!art) return { order: shuffled, featured: false };
   const idx = shuffled.findIndex(
     (s) => s.artist.toLowerCase().replace(/\s+/g, "") === art ||
            s.handle.toLowerCase().replace("@", "") === art
@@ -132,11 +133,11 @@ function getInitialOrder(): ShowcaseItem[] {
     const [item] = shuffled.splice(idx, 1);
     shuffled.unshift(item);
   }
-  return shuffled;
+  return { order: shuffled, featured: idx >= 0 };
 }
 
 export function VideoShowcase({ children }: { children: (controls: ShowcaseControls) => ReactNode }) {
-  const [order] = useState(getInitialOrder);
+  const [{ order, featured }] = useState(getInitialOrder);
   const [current, setCurrent] = useState(0);
   const [fullscreen, setFullscreen] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -248,7 +249,7 @@ export function VideoShowcase({ children }: { children: (controls: ShowcaseContr
         className="hidden"
       />
 
-      {children({ item, progress, next, prev, openFullscreen })}
+      {children({ item, progress, next, prev, openFullscreen, featured: featured && current === 0 })}
 
       <AnimatePresence>
         {fullscreen && <CinemaPlayer order={order} initialIndex={current} onClose={handleCinemaClose} />}
@@ -257,8 +258,16 @@ export function VideoShowcase({ children }: { children: (controls: ShowcaseContr
   );
 }
 
-export function ArtistBadge({ item, progress, next, prev, openFullscreen }: ShowcaseControls) {
+export function ArtistBadge({ item, progress, next, prev, openFullscreen, featured }: ShowcaseControls) {
   const [hovered, setHovered] = useState(false);
+  const [pulsing, setPulsing] = useState(featured);
+
+  useEffect(() => {
+    if (!featured) return;
+    setPulsing(true);
+    const timer = setTimeout(() => setPulsing(false), 3000);
+    return () => clearTimeout(timer);
+  }, [featured]);
 
   const size = 34;
   const stroke = 2;
@@ -337,7 +346,12 @@ export function ArtistBadge({ item, progress, next, prev, openFullscreen }: Show
               {item.avatar.startsWith("/") ? (
                 <>
                   <img src={item.avatar} alt={item.artist} className="w-full h-full object-cover" />
-                  <div className={`absolute inset-0 transition-colors ${hovered ? "bg-transparent" : "bg-black/50"}`} />
+                  <div
+                    className={`absolute inset-0 transition-colors ${hovered ? "bg-transparent" : "bg-black/50"}`}
+                    style={pulsing ? {
+                      animation: "avatarPulse 1s ease-in-out 3",
+                    } : undefined}
+                  />
                 </>
               ) : (
                 item.avatar

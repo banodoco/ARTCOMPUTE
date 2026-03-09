@@ -53,6 +53,12 @@ body {
   90% { transform: translate(0%, -1%); }
 }
 
+/* Featured artist avatar pulse — reveals full color 3 times */
+@keyframes avatarPulse {
+  0%, 100% { background-color: rgba(0, 0, 0, 0.5); }
+  50% { background-color: transparent; }
+}
+
 /* Glitch hover for links */
 a:hover {
   text-shadow: 1px 0 #39ff14, -1px 0 #ff00ff;
