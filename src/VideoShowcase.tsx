@@ -119,8 +119,24 @@ function shuffle<T>(arr: T[]): T[] {
 
 const BG_CLIP_DURATION = 15;
 
+function getInitialOrder(): ShowcaseItem[] {
+  const params = new URLSearchParams(window.location.search);
+  const art = params.get("art")?.toLowerCase();
+  const shuffled = shuffle(SHOWCASE);
+  if (!art) return shuffled;
+  const idx = shuffled.findIndex(
+    (s) => s.artist.toLowerCase().replace(/\s+/g, "") === art ||
+           s.handle.toLowerCase().replace("@", "") === art
+  );
+  if (idx > 0) {
+    const [item] = shuffled.splice(idx, 1);
+    shuffled.unshift(item);
+  }
+  return shuffled;
+}
+
 export function VideoShowcase({ children }: { children: (controls: ShowcaseControls) => ReactNode }) {
-  const [order] = useState(() => shuffle(SHOWCASE));
+  const [order] = useState(getInitialOrder);
   const [current, setCurrent] = useState(0);
   const [fullscreen, setFullscreen] = useState(false);
   const [progress, setProgress] = useState(0);
