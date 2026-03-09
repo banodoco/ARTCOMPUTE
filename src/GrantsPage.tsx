@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { ChevronDown, ArrowLeft, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { VideoShowcase, ArtistBadge, SHOWCASE } from "./VideoShowcase";
 
 const SUPABASE_URL = "https://ujlwuvkrxlvoswwkerdf.supabase.co";
 const SUPABASE_KEY =
@@ -126,6 +127,9 @@ export default function GrantsPage() {
 
   return (
     <div className="min-h-screen scanlines grain relative flex flex-col">
+      {SHOWCASE.map((s) => s.avatar.startsWith("/") ? <link key={s.avatar} rel="preload" as="image" href={s.avatar} /> : null)}
+      <VideoShowcase>
+        {(showcaseControls) => (
       <motion.main
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -141,9 +145,7 @@ export default function GrantsPage() {
             <ArrowLeft size={12} />
             ArtCompute
           </Link>
-          <span className="text-[10px] font-bold tracking-[0.25em] uppercase text-white/30">
-            Grants
-          </span>
+          <ArtistBadge {...showcaseControls} />
         </header>
 
         {/* Content */}
@@ -503,6 +505,8 @@ export default function GrantsPage() {
           </span>
         </footer>
       </motion.main>
+        )}
+      </VideoShowcase>
     </div>
   );
 }
