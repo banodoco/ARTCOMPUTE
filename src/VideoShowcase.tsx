@@ -107,7 +107,7 @@ export interface ShowcaseControls {
   prev: (fast?: boolean) => void;
   openFullscreen: () => void;
   featured: boolean;
-  autoAdvanced: boolean;
+  autoAdvanced: number;
 }
 
 function shuffle<T>(arr: T[]): T[] {
@@ -144,7 +144,8 @@ export function VideoShowcase({ children }: { children: (controls: ShowcaseContr
   const [progress, setProgress] = useState(0);
   const [bgVisible, setBgVisible] = useState(true);
   const [bgScale, setBgScale] = useState(1);
-  const [autoAdvanced, setAutoAdvanced] = useState(false);
+  const autoAdvancedRef = useRef(false);
+  const [advanceCount, setAdvanceCount] = useState(0);
   const bgVideoRef = useRef<HTMLVideoElement>(null);
   const preloadRef = useRef<HTMLVideoElement>(null);
   const rafRef = useRef<number>(0);
@@ -156,7 +157,7 @@ export function VideoShowcase({ children }: { children: (controls: ShowcaseContr
   const advance = useCallback((dir: 1 | -1, fast = false) => {
     if (advancedRef.current) return;
     advancedRef.current = true;
-    setAutoAdvanced(!fast);
+    autoAdvancedRef.current = !fast;
     setProgress(0);
     setBgVisible(false);
     setBgScale(fast ? 1 : 1.08);
@@ -170,6 +171,10 @@ export function VideoShowcase({ children }: { children: (controls: ShowcaseContr
   const prev = useCallback((fast = false) => advance(-1, fast), [advance]);
 
   useEffect(() => {
+    if (autoAdvancedRef.current) {
+      setAdvanceCount((c) => c + 1);
+      autoAdvancedRef.current = false;
+    }
     advancedRef.current = false;
     startTimeRef.current = -1;
     setProgress(0);
@@ -252,7 +257,7 @@ export function VideoShowcase({ children }: { children: (controls: ShowcaseContr
         className="hidden"
       />
 
-      {children({ item, progress, next, prev, openFullscreen, featured: featured && current === 0, autoAdvanced })}
+      {children({ item, progress, next, prev, openFullscreen, featured: featured && current === 0, autoAdvanced: advanceCount })}
 
       <AnimatePresence>
         {fullscreen && <CinemaPlayer order={order} initialIndex={current} onClose={handleCinemaClose} />}
@@ -277,12 +282,12 @@ export function ArtistBadge({ item, progress, next, prev, openFullscreen, featur
   }, [featured]);
 
   useEffect(() => {
-    if (autoAdvanced) {
+    if (autoAdvanced > 0) {
       setPulsing(true);
       const timer = setTimeout(() => setPulsing(false), 3200);
       return () => clearTimeout(timer);
     }
-  }, [item.artist]); // re-trigger each time artist changes via auto-advance
+  }, [autoAdvanced]);
 
   const size = 34;
   const stroke = 2;
