@@ -195,7 +195,7 @@ export function VideoShowcase({ children }: { children: (controls: ShowcaseContr
   useEffect(() => {
     const tick = () => {
       const v = bgVideoRef.current;
-      if (v && v.duration && !isNaN(v.duration) && !advancedRef.current && startTimeRef.current >= 0) {
+      if (v && v.duration && !isNaN(v.duration) && !advancedRef.current && !fullscreen && startTimeRef.current >= 0) {
         const elapsed = v.currentTime - startTimeRef.current;
         setProgress(Math.min(1, elapsed / BG_CLIP_DURATION));
         if (elapsed >= BG_CLIP_DURATION) {
@@ -206,7 +206,7 @@ export function VideoShowcase({ children }: { children: (controls: ShowcaseContr
     };
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [next]);
+  }, [next, fullscreen]);
 
   const openFullscreen = () => {
     setFullscreen(true);
