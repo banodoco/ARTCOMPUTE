@@ -260,13 +260,16 @@ export function VideoShowcase({ children }: { children: (controls: ShowcaseContr
 
 export function ArtistBadge({ item, progress, next, prev, openFullscreen, featured }: ShowcaseControls) {
   const [hovered, setHovered] = useState(false);
-  const [pulsing, setPulsing] = useState(featured);
+  const [pulsing, setPulsing] = useState(false);
+  const hasPlayedRef = useRef(false);
 
   useEffect(() => {
-    if (!featured) return;
-    setPulsing(true);
-    const timer = setTimeout(() => setPulsing(false), 3000);
-    return () => clearTimeout(timer);
+    if (featured && !hasPlayedRef.current) {
+      hasPlayedRef.current = true;
+      setPulsing(true);
+      const timer = setTimeout(() => setPulsing(false), 3000);
+      return () => clearTimeout(timer);
+    }
   }, [featured]);
 
   const size = 34;
