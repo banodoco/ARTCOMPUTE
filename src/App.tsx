@@ -82,6 +82,16 @@ const SHOWCASE: ShowcaseItem[] = [
     bgStart: 3,
   },
   {
+    src: "/calvin_herbst.mp4",
+    artist: "Calvin Herbst",
+    handle: "@calvinherbst1",
+    socialUrl: "https://x.com/calvinherbst1",
+    socialType: "twitter",
+    avatar: "/calvin_herbst.jpg",
+    poster: "/calvin_herbst_poster.jpg",
+    tool: "Wan",
+  },
+  {
     src: "/machine_delusions.mp4",
     artist: "Machine Delusions",
     handle: "@Machinedelusion",
