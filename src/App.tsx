@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from "motion/react";
-import { ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Pause, Play, X } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Pause, Play, X, ArrowRight } from "lucide-react";
 import React, { useState, useEffect, useRef, useCallback, ReactNode } from "react";
+import { Link } from "react-router-dom";
 
 const WALLET_ADDRESS = "FBXSuVueW9Z1U2RmgmYazAX1GGdzay75AKHD9ijJpszq";
 const FALLBACK_BALANCE = 34.0001;
@@ -187,14 +188,22 @@ export default function App() {
             </section>
 
             <section className="mt-6 md:mt-12">
-              <a
-                href="https://discord.gg/kEqEbsAb8Q"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-5 md:px-6 py-2.5 md:py-3 bg-[#39ff14]/15 border border-[#39ff14]/30 text-[#39ff14] text-xs md:text-sm hover:bg-[#39ff14]/25 transition-colors shadow-[0_0_20px_rgba(57,255,20,0.05)]"
-              >
-                Request Compute <ExternalLink size={14} />
-              </a>
+              <div className="flex items-center gap-3">
+                <a
+                  href="https://discord.gg/kEqEbsAb8Q"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 md:px-6 py-2.5 md:py-3 bg-[#39ff14]/15 border border-[#39ff14]/30 text-[#39ff14] text-xs md:text-sm hover:bg-[#39ff14]/25 transition-colors shadow-[0_0_20px_rgba(57,255,20,0.05)]"
+                >
+                  Request Compute <ExternalLink size={14} />
+                </a>
+                <Link
+                  to="/grants"
+                  className="inline-flex items-center gap-2 px-5 md:px-6 py-2.5 md:py-3 border border-white/10 text-white/50 text-xs md:text-sm hover:border-white/20 hover:text-white/70 transition-colors"
+                >
+                  View Grants <ArrowRight size={14} />
+                </Link>
+              </div>
               <p className="text-[11px] md:text-xs text-white/55 mt-2 md:mt-3 max-w-sm leading-5">
                 Request in Discord &rarr; AI reviews &rarr; response in minutes.
               </p>
