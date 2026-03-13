@@ -117,12 +117,12 @@ export default function App() {
                   View Grants <ArrowRight size={14} />
                 </Link>
               </div>
-              <p className="text-[11px] md:text-xs text-white/40 mt-2 md:mt-3 max-w-sm leading-5">
-                See what others have done with very little compute &rarr;{" "}
-                <Link to="/manifesto" className="underline text-white/50 hover:text-[#39ff14]/60 transition-colors">
-                  Read our manifesto
-                </Link>
-              </p>
+              <Link
+                to="/manifesto"
+                className="inline-block text-[11px] md:text-xs text-white/45 hover:text-[#39ff14]/60 transition-colors mt-2 md:mt-3 underline"
+              >
+                What can you do with 6 hours of GPU time? &rarr;
+              </Link>
             </section>
           </div>
 
