@@ -238,6 +238,24 @@ export default function App() {
                 question="Can I use this for commercial projects?"
                 answer="As long as the resulting model and learnings are released openly, yes. We want to accelerate the open source ecosystem."
               />
+              <FAQItem
+                question="How can I donate?"
+                answer={
+                  <div className="space-y-2">
+                    <p>
+                      Send SOL to the grants wallet:
+                    </p>
+                    <p className="break-all select-all text-white/40">
+                      {WALLET_ADDRESS}
+                    </p>
+                    <p>
+                      <a href={`https://solscan.io/account/${WALLET_ADDRESS}`} target="_blank" rel="noopener noreferrer" className="underline text-white/50 hover:text-[#39ff14]/60">
+                        View on Solscan
+                      </a>
+                    </p>
+                  </div>
+                }
+              />
             </FAQList>
           </div>
         </div>
