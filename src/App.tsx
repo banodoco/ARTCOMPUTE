@@ -121,7 +121,7 @@ export default function App() {
                 to="/manifesto"
                 className="inline-block text-[11px] md:text-xs text-white/45 hover:text-[#39ff14]/60 transition-colors mt-2 md:mt-3 underline"
               >
-                What can you do with 6 hours of GPU time? &rarr;
+                What can you do with 6 hours of GPU time?
               </Link>
             </section>
           </div>
