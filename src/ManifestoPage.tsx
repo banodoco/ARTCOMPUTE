@@ -1,6 +1,7 @@
 import { motion } from "motion/react";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEffect, useRef } from "react";
 import { VideoShowcase, ArtistBadge, SHOWCASE } from "./VideoShowcase";
 
 const SUPABASE_STORAGE = "https://ujlwuvkrxlvoswwkerdf.supabase.co/storage/v1/object/public/videos/artcompute";
@@ -82,6 +83,42 @@ const EXAMPLES: Example[] = [
   },
 ];
 
+function AutoPlayVideo({ src, caption }: { src: string; caption: string }) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const video = ref.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.4 }
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <video
+      ref={ref}
+      src={src}
+      controls
+      muted
+      playsInline
+      loop
+      aria-label={caption}
+      className="w-full border border-white/8 bg-black"
+    />
+  );
+}
+
 export default function ManifestoPage() {
   return (
     <div className="min-h-screen scanlines grain relative flex flex-col">
@@ -115,9 +152,9 @@ export default function ManifestoPage() {
               {/* Title */}
               <section className="mb-8 md:mb-12">
                 <h2 className="font-serif text-2xl md:text-4xl font-normal leading-tight text-white/95 tracking-tight">
-                  What You Can Do With
+                  We Want to Help You Do
                   <br />
-                  Very Little Compute
+                  a Lot With Very Little Compute
                 </h2>
                 <p className="text-xs md:text-sm leading-6 md:leading-7 text-white/55 mt-4 md:mt-6 max-w-lg">
                   A lot of people say they'd like to train LoRAs or fine-tunes
@@ -127,7 +164,15 @@ export default function ManifestoPage() {
                   Models.
                 </p>
                 <p className="text-xs md:text-sm leading-6 md:leading-7 text-white/55 mt-3 max-w-lg">
-                  Banodoco is launching{" "}
+                  <a
+                    href="https://banodoco.ai"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-white/70 hover:text-[#39ff14]/60 transition-colors underline"
+                  >
+                    Banodoco
+                  </a>{" "}
+                  is launching{" "}
                   <span className="text-white/80 font-bold">
                     ArtCompute Microgrants
                   </span>{" "}
@@ -136,6 +181,11 @@ export default function ManifestoPage() {
                   approved you get given a grant within minutes.
                 </p>
               </section>
+
+              {/* Examples subheader */}
+              <h3 className="text-xs md:text-sm font-bold uppercase tracking-[0.15em] text-white/40 mb-6 md:mb-10 border-b border-white/8 pb-4">
+                Some examples of what you can do with very little compute
+              </h3>
 
               {/* Examples */}
               <div className="space-y-10 md:space-y-16">
@@ -189,14 +239,7 @@ export default function ManifestoPage() {
                       </p>
                       <div className="p-3 md:p-4">
                         {ex.media.type === "video" ? (
-                          <video
-                            src={ex.media.src}
-                            controls
-                            muted
-                            playsInline
-                            loop
-                            className="w-full border border-white/8 bg-black"
-                          />
+                          <AutoPlayVideo src={ex.media.src} caption={ex.media.caption} />
                         ) : (
                           <img
                             src={ex.media.src}
@@ -212,6 +255,9 @@ export default function ManifestoPage() {
 
               {/* Bottom CTA */}
               <section className="mt-12 md:mt-20 border border-white/8 bg-white/[0.02] p-6 md:p-10">
+                <h3 className="text-xs md:text-sm font-bold uppercase tracking-[0.15em] text-white/40 mb-4 md:mb-6">
+                  You could hear back from us instantaneously
+                </h3>
                 <p className="text-xs md:text-sm leading-6 md:leading-7 text-white/55">
                   These are all examples of people extending the capabilities of
                   open source models with a tiny amount of compute — but there's
