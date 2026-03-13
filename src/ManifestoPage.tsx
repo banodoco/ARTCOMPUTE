@@ -109,7 +109,6 @@ function AutoPlayVideo({ src, caption }: { src: string; caption: string }) {
     <video
       ref={ref}
       src={src}
-      controls
       muted
       playsInline
       loop
