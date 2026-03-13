@@ -183,10 +183,16 @@ export default function ManifestoPage() {
               </section>
 
               {/* Examples subheader — narrower */}
-              <div className="max-w-3xl mx-auto px-5 md:px-10">
-                <h3 className="text-xs md:text-sm font-bold uppercase tracking-[0.15em] text-white/40 mb-6 md:mb-10 border-b border-white/8 pb-4">
-                  Some examples of what you can do with very little compute
+              <div className="max-w-3xl mx-auto px-5 md:px-10 mb-6 md:mb-10">
+                <h3 className="font-serif text-lg md:text-2xl font-normal leading-tight text-white/90 tracking-tight">
+                  Some Examples of What You Can Do With Very Little Compute
                 </h3>
+                <p className="text-[11px] md:text-xs leading-relaxed text-white/40 mt-2">
+                  Note: these were not trained with our compute grants. You can see the current grants{" "}
+                  <Link to="/grants" className="underline text-white/50 hover:text-[#39ff14]/60 transition-colors">
+                    here
+                  </Link>.
+                </p>
               </div>
 
               {/* Examples — wider, side-by-side layout */}
