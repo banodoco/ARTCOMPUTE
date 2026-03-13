@@ -1,20 +1,20 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# ArtCompute
 
-# Run and deploy your AI Studio app
+Micro-grants for open-source AI art. Free GPU hours for artists and developers to train on top of open AI art models — LoRAs, finetunes, control vectors, dataset experiments, open model research.
 
-This contains everything you need to run your app locally.
+Apply in Discord, get an AI-powered review in minutes, receive SOL to your wallet.
 
-View your app in AI Studio: https://ai.studio/apps/c75aafcf-5d30-4a43-a979-8a353984bdde
+A [Banodoco](https://banodoco.ai) project.
 
-## Run Locally
+## Development
 
-**Prerequisites:**  Node.js
+```
+npm install
+npm run dev
+```
 
+## Build
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```
+npm run build
+```
