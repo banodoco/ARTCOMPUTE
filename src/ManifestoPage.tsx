@@ -188,7 +188,7 @@ export default function ManifestoPage() {
                   Some Examples of What You Can Do With Very Little Compute
                 </h3>
                 <p className="text-[11px] md:text-xs leading-relaxed text-white/40 mt-2">
-                  Note: these were not trained with our compute grants. You can see the current grants{" "}
+                  Note: these are examples of what you can do with very little compute but they were not trained with our compute grants. You can see the current grants{" "}
                   <Link to="/grants" className="underline text-white/50 hover:text-[#39ff14]/60 transition-colors">
                     here
                   </Link>.
