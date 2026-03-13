@@ -117,10 +117,7 @@ export default function App() {
                   View Grants <ArrowRight size={14} />
                 </Link>
               </div>
-              <p className="text-[11px] md:text-xs text-white/55 mt-2 md:mt-3 max-w-sm leading-5">
-                Request in Discord &rarr; AI reviews &rarr; response in minutes.
-              </p>
-              <p className="text-[11px] md:text-xs text-white/40 mt-1.5 max-w-sm leading-5">
+              <p className="text-[11px] md:text-xs text-white/40 mt-2 md:mt-3 max-w-sm leading-5">
                 See what others have done with very little compute &rarr;{" "}
                 <Link to="/manifesto" className="underline text-white/50 hover:text-[#39ff14]/60 transition-colors">
                   Read our manifesto
