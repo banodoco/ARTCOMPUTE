@@ -156,7 +156,7 @@ export default function App() {
                 answer={
                   <div className="space-y-3 leading-relaxed">
                     <p>
-                      Random degens created a memecoin based on one of my tweets. This resulted in me
+                      Random degens created a memecoin based on <a href="https://x.com/peteromallet/status/2029377317433192709/quotes" target="_blank" rel="noopener noreferrer" className="underline text-white/50 hover:text-[#39ff14]/60">one of my tweets</a>. This resulted in me
                       getting creator fees and I donated 100% of them to open source to not profit off
                       their gambling.{" "}
                       <a href="https://pom.voyage/assorted/accountability#pisscoin-grants" target="_blank" rel="noopener noreferrer" className="underline text-white/50 hover:text-[#39ff14]/60">
@@ -198,7 +198,30 @@ export default function App() {
               />
               <FAQItem
                 question="What kinds of models can I train?"
-                answer="Any open source model. We prioritize projects that contribute back to the community through fine-tunes, architectural experiments, or novel datasets."
+                answer={
+                  <div className="space-y-3">
+                    <p>
+                      Our grants are open to any open-source project, but we prioritize projects that are
+                      generalizable — not just training a single style or action, but enabling many styles
+                      and use cases.
+                    </p>
+                    <p>
+                      Paradigms like IC-LoRAs and edit bottles are great examples: rather than producing one
+                      narrow output, they create new control dimensions and modalities that benefit the whole
+                      community. We believe this kind of work magnifies the impact of compute grants and
+                      represents the most exciting opportunity available today.
+                    </p>
+                    <p>
+                      That said, we're open to other kinds of projects as well — some of our existing grants
+                      don't fall neatly into this category.
+                    </p>
+                    <p>
+                      We don't fund explicitly NSFW models — projects whose sole purpose is generating
+                      not-safe-for-work content. However, we don't prohibit projects that could be used for
+                      that so long as they have clear vanilla use cases as well.
+                    </p>
+                  </div>
+                }
               />
               <FAQItem
                 question="Do I need prior experience?"
