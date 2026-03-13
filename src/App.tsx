@@ -60,9 +60,17 @@ export default function App() {
         className="relative z-10 md:h-full flex flex-col md:overflow-hidden"
       >
         <header className="border-b border-white/8 px-5 md:px-10 py-3 md:py-4 flex justify-between items-center">
-          <h1 className="text-[10px] font-bold tracking-[0.25em] uppercase text-white/50">
-            ArtCompute
-          </h1>
+          <div className="flex items-center gap-4 md:gap-6">
+            <h1 className="text-[10px] font-bold tracking-[0.25em] uppercase text-white/50">
+              ArtCompute
+            </h1>
+            <Link
+              to="/examples"
+              className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 hover:text-[#39ff14]/60 transition-colors"
+            >
+              Examples
+            </Link>
+          </div>
           <ArtistBadge {...showcaseControls} />
         </header>
 
