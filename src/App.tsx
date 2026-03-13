@@ -65,7 +65,7 @@ export default function App() {
               ArtCompute
             </h1>
             <Link
-              to="/examples"
+              to="/manifesto"
               className="text-[10px] font-bold tracking-[0.15em] uppercase text-white/30 hover:text-[#39ff14]/60 transition-colors"
             >
               Examples
